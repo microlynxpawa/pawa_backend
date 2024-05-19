@@ -1,6 +1,10 @@
 
 export const ErrorCategory = {
-  Authentication: '0000',
+  Authentication: {
+    PendingSignup: '0000',
+    ConfirmSignup: '0009',
+    AuthHeader: '0010'
+  },
   Clients: {
     AddClient: '0001',
     ClientImage: '0002',

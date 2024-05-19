@@ -1,6 +1,6 @@
 import { ClientsService } from "../../services/clients/clients.service";
 import { AddNewClientDto, QueryClientDetails } from "../../dtos/clients/client.dto";
-import { Post, Get, Body, JsonController, QueryParams, Authorized, CurrentUser } from "routing-controllers";
+import { Post, Get, Body, JsonController, QueryParams, CurrentUser } from "routing-controllers";
 import { Service } from "typedi";
 
 
@@ -11,9 +11,10 @@ export class ClientsController {
   @Post("/new")
   //@Authorized(AuthorizedRoles.CREDIT_OFFICER)
   public async newClient(
-    //@CurrentUser({ required: true }) user: any,
+    @CurrentUser({ required: true }) user: any,
     @Body({ required: true }) dto: AddNewClientDto
   ) {
+    console.log("USER ", user);
     return await this.ClientsService.AddNewClient(dto);
   }
 

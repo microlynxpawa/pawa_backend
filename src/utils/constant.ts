@@ -1,0 +1,1 @@
+export const tokenValue = 'a1b2c3d4e5f6g7h8';
