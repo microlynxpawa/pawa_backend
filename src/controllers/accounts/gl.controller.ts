@@ -1,8 +1,8 @@
 import { GeneralLedgerService } from "../../services/accounts/gl.service";
 import { AddNewGLAccountDto } from "../../dtos/accounts/gl.dto";
-import { Post, Get, Body, JsonController, QueryParams, Authorized, CurrentUser } from "routing-controllers";
+import { Post, Body, JsonController } from "routing-controllers";
 import { Service } from "typedi";
-
+import { QueryProductGLSettings } from "../../dtos/products/products.dto";
 
 @Service()
 @JsonController("/glaccount")
@@ -17,8 +17,10 @@ export class GLAccountController {
     return await this.GLService.AddNewGLAccount(dto);
   }
 
-  @Get("/all")
-  public async getAllGLAccounts(){
-    return await this.GLService.getAllGLAccounts();
+  @Post("/bank-glaccount")
+  public async getAllGLAccounts(
+    @Body({ required: true }) dto: QueryProductGLSettings
+  ) {
+    return await this.GLService.getAllGLAccounts(dto);
   }
 }

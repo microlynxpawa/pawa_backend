@@ -9,7 +9,6 @@ import {
   ConfirmSignupErrorCodes,
   PendingSignupErrorCodes,
 } from "../../error/auth/pending.signup.errorcode";
-import { TRService } from "@config/types";
 import PendingAuthenticationModel from "../../db/models/pending.signup.model";
 import generateValidationCode, {
   generateDefaultPassword,
@@ -19,6 +18,8 @@ import {
   sendVerificationEmail,
 } from "../../utils/mails/mail.fun";
 import { Response } from "express";
+import Logger from "../../utils/winston";
+import { ResponseMessage } from "@config/types";
 
 const defaultValue: string = "";
 const maxValidationTime: number = 3;
@@ -28,7 +29,7 @@ export class PendingSignupService {
   constructor(private db: DatabaseConnection) {}
   public async SignupPendingUser(
     dto: AddPendingSignupDto
-  ): Promise<TRService | undefined> {
+  ): Promise<ResponseMessage> {
     try {
       //generate the validation code
       const validationCode = generateValidationCode();
@@ -63,14 +64,11 @@ export class PendingSignupService {
       //SEND EMAIL
       await sendVerificationEmail(emailAddress, validationCode, firstName);
 
-      return {
-        code: PendingSignupErrorCodes.success.code,
-        message: PendingSignupErrorCodes.success.message,
-      };
+      return PendingSignupErrorCodes.success;
     } catch (error) {
-      // Handle error appropriately (e.g., logging, rethrowing, etc.)
-      console.error("Error occurred while adding new signed up user:", error);
-      throw error; // Re-throw the error for the caller to handle
+      Logger.error("Error occurred while adding new signed up user:", error);
+      return PendingSignupErrorCodes.signupError;
+      //throw error; // Re-throw the error for the caller to handle
     }
   }
 
@@ -96,10 +94,9 @@ export class PendingSignupService {
       //CHECK IF NUMBER OF VALIDATION HERE IF NOT EXCEEDED
       const numberOfValidations = res?.[0]["NumberOfValidation"];
       if (numberOfValidations >= maxValidationTime) {
-        return resp.status(400).send({
-          code: ConfirmSignupErrorCodes.maxValidationError.code,
-          message: ConfirmSignupErrorCodes.maxValidationError.message,
-        });
+        return resp
+          .status(400)
+          .send(ConfirmSignupErrorCodes.maxValidationError);
       }
 
       if (DBValidationCode != validationCode) {
@@ -114,10 +111,7 @@ export class PendingSignupService {
             },
           }
         );
-        return resp.status(400).send({
-          code: ConfirmSignupErrorCodes.error.code,
-          message: ConfirmSignupErrorCodes.error.message,
-        });
+        return resp.status(400).send(ConfirmSignupErrorCodes.error);
       }
       //TODO: DECIDE OF PASSWORD ENCRYPTION.
       //CHECK TIME GIVEN HERE FOR CODE VERIFICATION 30 MINUTES.
@@ -140,14 +134,11 @@ export class PendingSignupService {
         accessPassword,
         firstName
       );
-      return {
-        code: ConfirmSignupErrorCodes.success.code,
-        message: ConfirmSignupErrorCodes.success.message,
-      };
+      return ConfirmSignupErrorCodes.success;
     } catch (error) {
-      // Handle error appropriately (e.g., logging, rethrowing, etc.)
-      console.error("Error occurred while confirming signed up user:", error);
-      throw error; // Re-throw the error for the caller to handle
+      Logger.error("Error occurred while confirming signed up user:", error);
+      return ConfirmSignupErrorCodes.confirmSignupFailed;
+      //throw error; // Re-throw the error for the caller to handle
     }
   }
 
@@ -172,10 +163,9 @@ export class PendingSignupService {
       //CHECK IF NUMBER OF VALIDATION HERE IF NOT EXCEEDED
       const numberOfValidations = res?.[0]["NumberOfValidation"];
       if (numberOfValidations >= maxValidationTime) {
-        return resp.status(400).send({
-          code: ConfirmSignupErrorCodes.maxValidationError.code,
-          message: ConfirmSignupErrorCodes.maxValidationError.message,
-        });
+        return resp
+          .status(400)
+          .send(ConfirmSignupErrorCodes.maxValidationError);
       }
 
       //generate the validation code
@@ -194,14 +184,11 @@ export class PendingSignupService {
       //SEND EMAIL
       await sendVerificationEmail(emailAddress, validationCode, firstName);
 
-      return {
-        code: PendingSignupErrorCodes.resendCodeSuccess.code,
-        message: PendingSignupErrorCodes.resendCodeSuccess.message,
-      };
+      return PendingSignupErrorCodes.resendCodeSuccess;
     } catch (error) {
-      // Handle error appropriately (e.g., logging, rethrowing, etc.)
-      console.error("Error occurred while confirming signed up user:", error);
-      throw error; // Re-throw the error for the caller to handle
+      Logger.error("Error occurred while confirming signed up user:", error);
+      PendingSignupErrorCodes.resendCodeFailed;
+      //throw error; // Re-throw the error for the caller to handle
     }
   }
 }

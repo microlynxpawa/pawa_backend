@@ -1,11 +1,10 @@
 import { BusinessClientsService } from "../../services/clients/business.clients.service";
 import { AddNewBusinesslientDto } from "../../dtos/clients/business.client.dto";
-import { Post, Get, Body, JsonController, Authorized, CurrentUser } from "routing-controllers";
+import { Post, Get, Body, JsonController } from "routing-controllers";
 import { Service } from "typedi";
 
-
 @Service()
-@JsonController("/business/clients")
+@JsonController("/clients/business")
 export class BusinessClientsController {
   constructor(private BusinessClientsService: BusinessClientsService) {}
   @Post("/new")
@@ -18,7 +17,7 @@ export class BusinessClientsController {
   }
 
   @Get("/all")
-  public async getAllBusinessClient(){
+  public async getAllBusinessClient() {
     return await this.BusinessClientsService.getAllBusinessClient();
   }
 }

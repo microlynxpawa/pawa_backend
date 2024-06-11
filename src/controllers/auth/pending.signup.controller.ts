@@ -1,3 +1,5 @@
+import { Response } from "express";
+import { Service } from "typedi";
 import { PendingSignupService } from "../../services/auth/pending.signup.service";
 import {
   AddPendingSignupDto,
@@ -5,8 +7,6 @@ import {
   ResendValidationCodeDto,
 } from "../../dtos/auth/pending.signup.dto";
 import { Post, Body, JsonController, Res } from "routing-controllers";
-import { Response } from "express";
-import { Service } from "typedi";
 
 @Service()
 @JsonController("/auth")

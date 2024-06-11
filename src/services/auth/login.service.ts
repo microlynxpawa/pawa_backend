@@ -1,10 +1,10 @@
+import { Response } from "express";
 import { Service } from "typedi";
 import { LoginUserDto } from "../../dtos/auth/login.dto";
 import { DatabaseConnection } from "../../db";
 import AuthenticationModel from "../../db/models/authentication.model";
 import { LoginErrorCodes } from "../../error/auth/pending.signup.errorcode";
-import { Response } from "express";
-import { TRService } from "@config/types";
+import Logger from "../../utils/winston";
 
 @Service()
 export class LoginUserService {
@@ -17,14 +17,14 @@ export class LoginUserService {
         where: { AuthenticationId: emailAddress, SecretKey: password },
       });
 
-      if (!res) return resp.status(404).send(LoginErrorCodes.error);
+      if (!res) return resp.status(400).send(LoginErrorCodes.loginFailed);
 
       //GENERATE USER TOKEN DATA AND...
-      return LoginErrorCodes.success;
+      return LoginErrorCodes.loginSuccess;
     } catch (error) {
-      // Handle error appropriately (e.g., logging, rethrowing, etc.)
-      console.error("Error occurred while logging in user:", error);
-      throw error; // Re-throw the error for the caller to handle
+      Logger.error("Error occurred while logging in user:", error);
+      return LoginErrorCodes.loginFailed;
+      //throw error; // Re-throw the error for the caller to handle
     }
   }
 }

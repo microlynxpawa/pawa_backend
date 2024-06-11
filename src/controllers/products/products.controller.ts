@@ -1,8 +1,18 @@
 import { ProductService } from "../../services/products/products.service";
-import { AddNewProductDto, AddNewProductGLSettingsDto, QueryProductDetails, QueryProductGLSettings } from "../../dtos/products/products.dto";
-import { Post, Get, Body, JsonController, QueryParams, Authorized, CurrentUser } from "routing-controllers";
+import {
+  AddNewProductDto,
+  AddNewProductGLSettingsDto,
+  QueryProductDetails,
+  QueryProductGLSettings,
+} from "../../dtos/products/products.dto";
+import {
+  Post,
+  Get,
+  Body,
+  JsonController,
+  QueryParams,
+} from "routing-controllers";
 import { Service } from "typedi";
-
 
 @Service()
 @JsonController("/products")
@@ -18,11 +28,11 @@ export class ProductController {
   }
 
   @Get("/all")
-  public async getAllProducts(){
+  public async getAllProducts() {
     return await this.ProductService.getAllProducts();
   }
 
-  @Get('/productdetails')
+  @Get("/productdetails")
   public async getProductDetails(
     @QueryParams({ required: false }) query: QueryProductDetails
   ) {
@@ -38,15 +48,17 @@ export class ProductController {
     return await this.ProductService.AddNewProductGLSettings(dto);
   }
 
-    @Get("/glsettings/all")
-  public async getAllProductGLSettings(){
-    return await this.ProductService.getAllProductGLSettings();
+  @Post("/glsettings/all")
+  public async getAllProductGLSettings(
+    @Body({ required: true }) dto: QueryProductGLSettings
+  ) {
+    return await this.ProductService.getAllProductGLSettings(dto);
   }
 
-    @Get('/productgl')
+  @Post("/bank-products")
   public async getProductGLSettings(
-    @QueryParams({ required: false }) query: QueryProductGLSettings
+    @Body({ required: true }) dto: QueryProductGLSettings
   ) {
-    return this.ProductService.GetBankProductId(query);
+    return await this.ProductService.GetBankProducts(dto);
   }
 }

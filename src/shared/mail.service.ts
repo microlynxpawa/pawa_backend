@@ -1,5 +1,7 @@
 import { createTransport } from "nodemailer";
 import config from "config";
+import Logger from "../utils/winston";
+import { AppErrorCodes } from "../error/appError/general.error";
 
 const getTransport = () =>
   createTransport({
@@ -16,6 +18,7 @@ export const sendMail = async (mailOptions: any) => {
   try {
     await getTransport().sendMail(mailOptions);
   } catch (error) {
-    console.log(error);
+    Logger.error("Error sending mail ", error);
+    return AppErrorCodes.appMailTransportError;
   }
 };
